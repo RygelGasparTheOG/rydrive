@@ -163,8 +163,11 @@
             align-items: center;
             justify-content: center;
             margin-right: 12px;
-            font-size: 18px;
+            font-size: 11px;
+            font-weight: 600;
             flex-shrink: 0;
+            color: #5f5f5f;
+            text-transform: uppercase;
         }
 
         .file-info {
@@ -319,6 +322,7 @@
             font-size: 48px;
             margin-bottom: 16px;
             opacity: 0.3;
+            font-weight: 300;
         }
 
         .empty-state h3 {
@@ -414,7 +418,8 @@
     <script>
         let currentPath = '';
 
-        function loadFiles(path = '') {
+        function loadFiles(path) {
+            if (path === undefined) path = '';
             currentPath = path;
             fetch('/api/list?path=' + encodeURIComponent(path))
                 .then(r => r.json())
@@ -448,12 +453,12 @@
             const fileList = document.getElementById('fileList');
             
             if (items.length === 0) {
-                fileList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📁</div><h3>No files here yet</h3><p>Upload files or create folders to get started</p></div>';
+                fileList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">[ ]</div><h3>No files here yet</h3><p>Upload files or create folders to get started</p></div>';
                 return;
             }
 
             const html = items.map(item => {
-                const icon = item.type === 'folder' ? '📁' : getFileIcon(item.name);
+                const icon = item.type === 'folder' ? 'DIR' : getFileIcon(item.name);
                 const clickAction = item.type === 'folder' ? 'loadFiles(\'' + escapeAttr(item.path) + '\')' : '';
                 
                 return '<div class="file-item">' +
@@ -478,14 +483,14 @@
         function getFileIcon(filename) {
             const ext = filename.split('.').pop().toLowerCase();
             const iconMap = {
-                pdf: '📄', txt: '📝', doc: '📝', docx: '📝',
-                jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', svg: '🖼️', webp: '🖼️',
-                mp4: '🎬', avi: '🎬', mov: '🎬', mkv: '🎬', webm: '🎬',
-                mp3: '🎵', wav: '🎵', ogg: '🎵', m4a: '🎵',
-                zip: '📦', rar: '📦', '7z': '📦', tar: '📦', gz: '📦',
-                js: '📜', py: '📜', html: '📜', css: '📜', json: '📜'
+                pdf: 'PDF', txt: 'TXT', doc: 'DOC', docx: 'DOC',
+                jpg: 'IMG', jpeg: 'IMG', png: 'IMG', gif: 'IMG', svg: 'SVG', webp: 'IMG',
+                mp4: 'VID', avi: 'VID', mov: 'VID', mkv: 'VID', webm: 'VID',
+                mp3: 'AUD', wav: 'AUD', ogg: 'AUD', m4a: 'AUD',
+                zip: 'ZIP', rar: 'RAR', '7z': '7Z', tar: 'TAR', gz: 'GZ',
+                js: 'JS', py: 'PY', html: 'HTM', css: 'CSS', json: 'JSN'
             };
-            return iconMap[ext] || '📄';
+            return iconMap[ext] || 'FILE';
         }
 
         function formatSize(bytes) {
