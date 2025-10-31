@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RyDrive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f7f7f8;
+            color: #1f1f1f;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e8e8e8;
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f1f1f;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        .toolbar {
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            color: #1f1f1f;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+            border-color: #b0b0b0;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: #2f2f2f;
+            color: #ffffff;
+            border-color: #2f2f2f;
+        }
+
+        .btn-primary:hover {
+            background: #1f1f1f;
+            border-color: #1f1f1f;
+        }
+
+        .btn-danger {
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        .btn-danger:hover {
+            background: #fff5f5;
+            border-color: #b71c1c;
+            color: #b71c1c;
+        }
+
+        .breadcrumb {
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            padding: 10px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .breadcrumb-item {
+            cursor: pointer;
+            color: #5f5f5f;
+            transition: color 0.15s ease;
+        }
+
+        .breadcrumb-item:hover {
+            color: #1f1f1f;
+        }
+
+        .breadcrumb-separator {
+            color: #d0d0d0;
+            user-select: none;
+        }
+
+        .file-list {
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.1s ease;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item:hover {
+            background: #fafafa;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+            cursor: pointer;
+        }
+
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+            color: #1f1f1f;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-meta {
+            font-size: 13px;
+            color: #7f7f7f;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .file-actions .btn {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #1f1f1f;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #1f1f1f;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.15s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2f2f2f;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+        }
+
+        .viewer-modal .modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            padding: 20px;
+        }
+
+        .viewer-content {
+            margin-top: 16px;
+        }
+
+        .viewer-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .viewer-content video,
+        .viewer-content audio {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .viewer-content iframe {
+            width: 100%;
+            height: 70vh;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+        }
+
+        #uploadProgress {
+            display: none;
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #5f5f5f;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f7f7f;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: #5f5f5f;
+            font-weight: 500;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: #9f9f9f;
+        }
+
+        @media (max-width: 768px) {
+            .file-actions {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .file-actions .btn {
+                width: 100%;
+            }
+
+            .file-item {
+                flex-wrap: wrap;
+            }
+
+            .file-info {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">RyDrive</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="showUploadModal()">Upload Files</button>
+            <button class="btn" onclick="showCreateFolderModal()">New Folder</button>
+            <button class="btn" onclick="loadFiles()">Refresh</button>
+        </div>
+
+        <div class="breadcrumb" id="breadcrumb"></div>
+
+        <div class="file-list" id="fileList"></div>
+    </div>
+
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">Upload Files</div>
+            <div class="form-group">
+                <input type="file" id="fileInput" multiple>
+            </div>
+            <div id="uploadProgress"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="uploadFiles()">Upload</button>
+                <button class="btn" onclick="closeModal('uploadModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="createFolderModal">
+        <div class="modal-content">
+            <div class="modal-header">Create New Folder</div>
+            <div class="form-group">
+                <label>Folder Name</label>
+                <input type="text" id="folderName" placeholder="Enter folder name">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="createFolder()">Create</button>
+                <button class="btn" onclick="closeModal('createFolderModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal viewer-modal" id="viewerModal">
+        <div class="modal-content">
+            <div class="modal-header" id="viewerTitle"></div>
+            <div class="viewer-content" id="viewerContent"></div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('viewerModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPath = '';
+
+        function loadFiles(path = '') {
+            currentPath = path;
+            fetch('/api/list?path=' + encodeURIComponent(path))
+                .then(r => r.json())
+                .then(data => {
+                    renderBreadcrumb(path);
+                    renderFiles(data.items);
+                })
+                .catch(err => {
+                    console.error('Error loading files:', err);
+                    alert('Error loading files. Please try again.');
+                });
+        }
+
+        function renderBreadcrumb(path) {
+            const parts = path ? path.split('/').filter(p => p) : [];
+            const breadcrumb = document.getElementById('breadcrumb');
+            
+            let html = '<span class="breadcrumb-item" onclick="loadFiles(\'\')">Home</span>';
+            
+            let builtPath = '';
+            parts.forEach((part, idx) => {
+                builtPath += part + '/';
+                html += '<span class="breadcrumb-separator">/</span>';
+                html += '<span class="breadcrumb-item" onclick="loadFiles(\'' + builtPath + '\')">' + escapeHtml(part) + '</span>';
+            });
+            
+            breadcrumb.innerHTML = html;
+        }
+
+        function renderFiles(items) {
+            const fileList = document.getElementById('fileList');
+            
+            if (items.length === 0) {
+                fileList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📁</div><h3>No files here yet</h3><p>Upload files or create folders to get started</p></div>';
+                return;
+            }
+
+            const html = items.map(item => {
+                const icon = item.type === 'folder' ? '📁' : getFileIcon(item.name);
+                const clickAction = item.type === 'folder' ? 'loadFiles(\'' + escapeAttr(item.path) + '\')' : '';
+                
+                return '<div class="file-item">' +
+                    '<div class="file-icon">' + icon + '</div>' +
+                    '<div class="file-info" onclick="' + clickAction + '">' +
+                    '<div class="file-name">' + escapeHtml(item.name) + '</div>' +
+                    '<div class="file-meta">' + (item.type === 'folder' ? 'Folder' : formatSize(item.size)) + '</div>' +
+                    '</div>' +
+                    '<div class="file-actions">' +
+                    (item.type === 'file' ? 
+                        '<button class="btn" onclick="viewFile(\'' + escapeAttr(item.path) + '\', \'' + escapeAttr(item.name) + '\')">View</button>' +
+                        '<button class="btn" onclick="downloadFile(\'' + escapeAttr(item.path) + '\')">Download</button>' 
+                    : '') +
+                    '<button class="btn btn-danger" onclick="deleteItem(\'' + escapeAttr(item.path) + '\', \'' + item.type + '\')">Delete</button>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+
+            fileList.innerHTML = html;
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const iconMap = {
+                pdf: '📄', txt: '📝', doc: '📝', docx: '📝',
+                jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', svg: '🖼️', webp: '🖼️',
+                mp4: '🎬', avi: '🎬', mov: '🎬', mkv: '🎬', webm: '🎬',
+                mp3: '🎵', wav: '🎵', ogg: '🎵', m4a: '🎵',
+                zip: '📦', rar: '📦', '7z': '📦', tar: '📦', gz: '📦',
+                js: '📜', py: '📜', html: '📜', css: '📜', json: '📜'
+            };
+            return iconMap[ext] || '📄';
+        }
+
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return text.replace(/'/g, "\\'");
+        }
+
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function showCreateFolderModal() {
+            document.getElementById('createFolderModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'uploadModal') {
+                document.getElementById('fileInput').value = '';
+                document.getElementById('uploadProgress').style.display = 'none';
+            }
+            if (modalId === 'createFolderModal') {
+                document.getElementById('folderName').value = '';
+            }
+        }
+
+        async function uploadFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+            
+            if (files.length === 0) {
+                alert('Please select files to upload');
+                return;
+            }
+
+            const progress = document.getElementById('uploadProgress');
+            progress.style.display = 'block';
+            progress.textContent = 'Uploading...';
+
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    const formData = new FormData();
+                    formData.append('file', files[i]);
+                    formData.append('path', currentPath);
+
+                    await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    progress.textContent = 'Uploaded ' + (i + 1) + '/' + files.length + ' files';
+                }
+
+                closeModal('uploadModal');
+                loadFiles(currentPath);
+            } catch (err) {
+                console.error('Upload error:', err);
+                alert('Error uploading files. Please try again.');
+            }
+        }
+
+        async function createFolder() {
+            const folderName = document.getElementById('folderName').value.trim();
+            
+            if (!folderName) {
+                alert('Please enter a folder name');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/mkdir', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({path: currentPath, name: folderName})
+                });
+
+                if (response.ok) {
+                    closeModal('createFolderModal');
+                    loadFiles(currentPath);
+                } else {
+                    alert('Error creating folder');
+                }
+            } catch (err) {
+                console.error('Error creating folder:', err);
+                alert('Error creating folder. Please try again.');
+            }
+        }
+
+        function downloadFile(path) {
+            window.open('/api/download/' + encodeURIComponent(path), '_blank');
+        }
+
+        async function deleteItem(path, type) {
+            if (!confirm('Are you sure you want to delete this ' + type + '?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/delete', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({path: path})
+                });
+
+                if (response.ok) {
+                    loadFiles(currentPath);
+                } else {
+                    alert('Error deleting ' + type);
+                }
+            } catch (err) {
+                console.error('Error deleting:', err);
+                alert('Error deleting ' + type + '. Please try again.');
+            }
+        }
+
+        function viewFile(path, name) {
+            const ext = name.split('.').pop().toLowerCase();
+            const viewerContent = document.getElementById('viewerContent');
+            const viewerTitle = document.getElementById('viewerTitle');
+            
+            viewerTitle.textContent = name;
+            const viewUrl = '/api/view/' + encodeURIComponent(path);
+
+            if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(ext)) {
+                viewerContent.innerHTML = '<img src="' + viewUrl + '" alt="' + escapeHtml(name) + '">';
+            } else if (['mp4', 'webm', 'ogg'].includes(ext)) {
+                viewerContent.innerHTML = '<video controls src="' + viewUrl + '"></video>';
+            } else if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) {
+                viewerContent.innerHTML = '<audio controls src="' + viewUrl + '"></audio>';
+            } else if (ext === 'pdf') {
+                viewerContent.innerHTML = '<iframe src="' + viewUrl + '"></iframe>';
+            } else {
+                viewerContent.innerHTML = '<p>Preview not available for this file type. <a href="' + viewUrl + '" target="_blank">Open in new tab</a></p>';
+            }
+
+            document.getElementById('viewerModal').classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFiles();
+        });
+    </script>
+</body>
+</html>
